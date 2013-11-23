@@ -1,15 +1,32 @@
 #!/usr/bin/env python3
-'''
-Request URL:
-Request Method:POST
-Status Code:200 OK
-
-'''
-
 from hashlib import sha512
+import os
 import json
+import datetime
+import time
 
 from requests import session
+
+def cache(key, age = datetime.timedelta(hours = 1)):
+    def wrap1(func):
+        def wrap2(*args, **kwargs):
+            if not os.path.exists('cache'):
+                os.mkdir('cache')
+
+            fn = os.path.join('cache',key)
+
+            if (not os.path.exists(fn)) or datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(fn)) > age:
+                f = open(fn, 'w')
+                value = func(*args, **kwargs)
+                f.write(value)
+            else:
+                f = open(fn, 'r')
+                value = f.read()
+                f.close()
+
+            return value
+        return wrap2
+    return wrap1
 
 class Jsx:
     url = 'https://amciv.lumenogic.com/amciv/jsx.json'
@@ -60,7 +77,7 @@ class Jsx:
               ])
             }
         )
-        return r
+        return r.text
 
-jsx = Jsx('guest','american')
-r = jsx.lookup(205)
+# jsx = Jsx('guest','american')
+# r = jsx.lookup(205)
