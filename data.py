@@ -32,12 +32,12 @@ class Jsx:
         })
         s.cookies.set('lumAuth',json.loads(r.text)[0])
         self.session = s
-    def lookup(self):
+    def lookup(self, question_number):
         r = self.session.post(self.url, data = {
             'jsx':json.dumps([
                 [["GQ","getById",{"id": 1}],"format",{"fmt": {"account": {"cash": True}}}],
                 [
-                    ["GQ","getById",{"id": 205}],
+                    ["GQ","getById",{"id": question_number}],
                     "format",
                     {"fmt": {
                         "cond": {
@@ -56,7 +56,7 @@ class Jsx:
                         }
                     }
                 ],
-                [["forum","get",{"topic": "Q.205"}],"format",{"fmt": {"post": {"login": True},"since": 1}}]
+                [["forum","get",{"topic": "Q.%d" % question_number}],"format",{"fmt": {"post": {"login": True},"since": 1}}]
               ])
             }
         )
