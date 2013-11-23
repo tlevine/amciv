@@ -4,6 +4,7 @@ import os
 import json
 import datetime
 import time
+import random
 
 from requests import session
 
@@ -27,6 +28,7 @@ def cache(func, arg):
     return value
 
 class Jsx:
+    'Access the jsx endpoint.'
     url = 'https://amciv.lumenogic.com/amciv/jsx.json'
     def __init__(self, login = 'guest', password = 'american'):
         s = session()
@@ -43,7 +45,7 @@ class Jsx:
         r = s.get('https://amciv.lumenogic.com/amciv/app.html')
 
         r = s.post(self.url, data = {
-            'jsx':json.dumps([["registrar","login",{"login": login,"authKey": sha512(password).hexdigest()}]])
+            'jsx':json.dumps([["registrar","login",{"login": login,"authKey": sha512(password.encode('utf-8')).hexdigest()}]])
         })
         s.cookies.set('lumAuth',json.loads(r.text)[0])
         self.session = s
@@ -81,5 +83,13 @@ class Jsx:
         )
         return r.text
 
-jsx = Jsx('guest','american')
-r = jsx.lookup(205)
+def download():
+    'Refresh the cache.'
+    from random import normalvariate
+    jsx = Jsx('guest','american')
+    for i in range(1, 205):
+        jsx.lookup(i)
+        time.sleep(random.normalvariate(60, 10))
+
+download()
+# data = {i:json.loads(jsx.lookup(i)) for i in range(205)}
