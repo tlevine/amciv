@@ -7,26 +7,24 @@ import time
 
 from requests import session
 
-def cache(key, age = datetime.timedelta(hours = 1)):
-    def wrap1(func):
-        def wrap2(*args, **kwargs):
-            if not os.path.exists('data'):
-                os.mkdir('data')
+def cache(func, arg):
+    'Cache a single-argument function. Use the argument as the key. Ignore func name.'
+    age = datetime.timedelta(hours = 1)
+    if not os.path.exists('data'):
+        os.mkdir('data')
 
-            fn = os.path.join('data',key)
+    fn = os.path.join('data',str(arg))
 
-            if (not os.path.exists(fn)) or datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(fn)) > age:
-                f = open(fn, 'w')
-                value = func(*args, **kwargs)
-                f.write(value)
-            else:
-                f = open(fn, 'r')
-                value = f.read()
-                f.close()
+    if (not os.path.exists(fn)) or datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(fn)) > age:
+        f = open(fn, 'w')
+        value = func(arg)
+        f.write(value)
+    else:
+        f = open(fn, 'r')
+        value = f.read()
+        f.close()
 
-            return value
-        return wrap2
-    return wrap1
+    return value
 
 class Jsx:
     url = 'https://amciv.lumenogic.com/amciv/jsx.json'
@@ -49,7 +47,11 @@ class Jsx:
         })
         s.cookies.set('lumAuth',json.loads(r.text)[0])
         self.session = s
+
     def lookup(self, question_number):
+        return cache(self._lookup, question_number)
+
+    def _lookup(self, question_number):
         r = self.session.post(self.url, data = {
             'jsx':json.dumps([
  #              [["GQ","getById",{"id": 1}],"format",{"fmt": {"account": {"cash": True}}}],
@@ -79,5 +81,5 @@ class Jsx:
         )
         return r.text
 
-# jsx = Jsx('guest','american')
-# r = jsx.lookup(205)
+jsx = Jsx('guest','american')
+r = jsx.lookup(205)
