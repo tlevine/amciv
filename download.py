@@ -10,10 +10,10 @@ from requests import session
 def cache(key, age = datetime.timedelta(hours = 1)):
     def wrap1(func):
         def wrap2(*args, **kwargs):
-            if not os.path.exists('cache'):
-                os.mkdir('cache')
+            if not os.path.exists('data'):
+                os.mkdir('data')
 
-            fn = os.path.join('cache',key)
+            fn = os.path.join('data',key)
 
             if (not os.path.exists(fn)) or datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(fn)) > age:
                 f = open(fn, 'w')
