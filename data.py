@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 Request URL:
 Request Method:POST
@@ -35,7 +35,7 @@ class Jsx:
     def lookup(self, question_number):
         r = self.session.post(self.url, data = {
             'jsx':json.dumps([
-                [["GQ","getById",{"id": 1}],"format",{"fmt": {"account": {"cash": True}}}],
+ #              [["GQ","getById",{"id": 1}],"format",{"fmt": {"account": {"cash": True}}}],
                 [
                     ["GQ","getById",{"id": question_number}],
                     "format",
@@ -56,8 +56,11 @@ class Jsx:
                         }
                     }
                 ],
-                [["forum","get",{"topic": "Q.%d" % question_number}],"format",{"fmt": {"post": {"login": True},"since": 1}}]
+ #              [["forum","get",{"topic": "Q.%d" % question_number}],"format",{"fmt": {"post": {"login": True},"since": 1}}]
               ])
             }
         )
+        return r
 
+jsx = Jsx('guest','american')
+r = jsx.lookup(205)
