@@ -91,5 +91,6 @@ def download():
         jsx.lookup(i)
         time.sleep(random.normalvariate(60, 10))
 
-download()
-# data = {i:json.loads(jsx.lookup(i)) for i in range(205)}
+def load_data():
+    'Load the data as a dictionary mapping question numbers to API responses'
+    return {i:json.loads(jsx.lookup(i)) for i in range(205)}
